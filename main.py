@@ -12,7 +12,12 @@ class Tile:
             self._colour = str(colour)
             self._number = int(number)
         else:
-            print("Try again with valid colours")  # ask to input again
+            print("Tiles cannot have those values. Try again with valid colours and/or numbers. \n"
+                  "The correct values are \n"
+                  "colours: {0} \n"
+                  "numbers: {1}".format(VALID_COLOURS, VALID_NUMBERS)
+                  )  # ask to input again
+            raise ValueError()
 
     def get_colour(self):
         return self._colour
@@ -58,7 +63,10 @@ class Board:
         return self.tiles
 
     def add_tile(self, tile: Tile):
-        self.tiles.append(tile)
+        try:
+            self.tiles.append(tile)
+        except ValueError:
+            pass
 
 
 class Player:
@@ -69,7 +77,10 @@ class Player:
         return self.tiles
 
     def add_tile(self, tile: Tile):
-        self.tiles.append(tile)
+        try:
+            self.tiles.append(tile)
+        except ValueError:
+            pass
 
     def remove_tile(self, tile: Tile):
         self.tiles.remove(tile)
@@ -166,19 +177,44 @@ class Game:
     def get_player(self):
         return self.player
 
+    def view_hand(self):
+        return self.player.get_hand()
+
+    def view_board(self):
+        return self.board.get_tiles()
+
     def get_board(self):
         return self.board
 
     def draw(self, colour, number):
-        tile = Tile(colour, number)
-        self.player.add_tile(tile)
+        try:
+            tile = Tile(colour, number)
+            self.player.add_tile(tile)
+        except ValueError:
+            pass
 
     def add_to_board(self, colour: str, number: int):
-        tile = Tile(colour, number)
-        self.board.add_tile(tile)
+        try:
+            tile = Tile(colour, number)
+            self.board.add_tile(tile)
+        except ValueError:
+            pass
 
     def add_tile_to_board(self, tile: Tile):
         self.board.add_tile(tile)
+
+    def play(self, colour: str, number: int):
+        try:
+            tile = Tile(colour, number)
+        except ValueError:
+            return
+        if tile in game.get_player().get_hand():
+            game.get_player().get_hand().remove(tile)
+            game.add_tile_to_board(tile)
+        else:
+            print("The tile {0} does not appear to be in your hand\n"
+                  "Use: game.view_hand() to view the current tiles in your hand \n "
+                  "Use: game.draw('colour', number) to add a tile to your hand".format(tile))
 
     @staticmethod
     def number_of_tiles_used(set_list: list):
@@ -246,7 +282,7 @@ class Game:
         if len(set_pathway) == 0:
             return [[]]
         for solution in set_pathway:
-            next_sets = game.organise_sets(solution[1])
+            next_sets = Game.organise_sets(solution[1])
             for i in next_sets:
                 output.append([solution[0]] + i)
         return output
@@ -266,22 +302,20 @@ class Game:
         # tiles in them
 
     def best_move(self):
-        plays = game.valid_sets_from_hand()
+        plays = self.valid_sets_from_hand()
         longest = []
         for key in plays:
             if len(key) > len(longest):
                 longest = key
         if len(longest) == 0:
             print("There are no options. Draw a piece from the deck. Using: " \
-                   "\n " \
-                   "game.draw('colour', number)")
+                  "\n " \
+                  "game.draw('colour', number)")
         else:
-            print((longest, plays[longest][0]))
             print("Using the tiles in player hand: {0} \n"
                   "Create the following sets:".format(longest))
             for i in plays[longest][0]:
                 print(i)
-
 
     @staticmethod
     def item_at_index(index_list: [], target_list: []):
@@ -355,65 +389,11 @@ class Game:
 
 
 if __name__ == '__main__':
-
     game = Game()
-
-    print("create valid sets")
     game.add_to_board("blue", 1)
     game.add_to_board("blue", 2)
     game.add_to_board("blue", 3)
-
-    print("\ncreate valid sets from a list of tiles- should return two valid "
-          "hands")
     game.add_to_board("red", 4)
     game.add_to_board("red", 5)
-    game.add_to_board("red", 6)
-    game.add_to_board("black", 7)
-    game.draw("orange", 7)
-    game.draw("blue", 7)
-    print("tiles on the board: {0} \n".format(game.board.get_tiles()))
-    valid_set_test = game.set_pathways(game.board.get_tiles())
-    # for i in valid_set_test:
-    #     print(i)
-    #     for j in i[1]:
-    #         print(j)
-    #         for k in j[1]:
-    #             print(k)
-    #     print()
-
-    print("organise output")
-    organised_sets = Game.organise_sets(valid_set_test)
-    print(organised_sets)
-    print()
-    for i in organised_sets:
-        print(i)
-    print()
-
-    print("valid sets")
-    valid_sets = game.valid_solutions(game.get_board().get_tiles())
-    for i in valid_sets:
-        print(i)
-
-    print("\nvalid solutions from hand")
-    # game.draw("red", 6)
-    print("valid sets")
-    valid_sets = game.valid_sets_from_hand()
-    for i in valid_sets:
-        print(i)
-        print(valid_sets[i])
-    game.valid_sets_from_hand()
-
-    print("\n best move")
+    game.draw("red", 6)
     game.best_move()
-
-
-    # print("\n create no possible valid list from tiles")
-    # game.add_to_board("orange", 1)
-    # valid_set_test = game.set_pathways(game.board.get_tiles())
-    # for i in valid_set_test:
-    #     print(i)
-    # g = Game()
-    # g.draw("red", 5)
-    # g.add_to_board("red", 5)
-    # print(g.me.get_hand())
-    # print(g.board.get_tiles())
