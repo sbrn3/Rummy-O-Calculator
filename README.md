@@ -7,7 +7,7 @@ For this program you have to input into the computer every tile that is on the b
 Open up the main.py file in any python 3 interpreter (e.g. idle). Run the file. 
 There should be no output. Just a blank line for you to type in commands. 
 
-The test.py file was just used during development to make sure that the code worked. 
+The test.py file was just used during development to make sure that the code worked. You can ignore it. 
 
 ## Main commands
 ### game.add_to_board(colour, number)
