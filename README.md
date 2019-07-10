@@ -1,11 +1,11 @@
 # Rummy-O-Calculator
 Tells you the best hand to play in the game Rummy-O.
 
-For this program you have to input into the computer every tile that is on the board and in your hand. With this information the computer can figure out every single possible set that can be made with those tiles. From that it will recommend to you the action which will play the most tiles from your deck and how you should them into sets with the tiles on the board. Limitations of this calculator are at the bottom. 
+For this program you have to input into the computer every tile that is on the board and in your hand. With this information the computer can figure out every single possible set that can be made with those tiles. From that it will recommend to you the action which will play the most tiles from your deck and how you should arrange them into sets with the tiles on the board. Limitations of this calculator are at the bottom. 
 
 ## Getting started
 Open up the main.py file in any python 3 interpreter (e.g. idle). Run the file. 
-There should be no output. Just a blank line. From here you will need to type in commands. 
+There should be no output. Just a blank line for you to type in commands. 
 
 The test.py file was just used during development to make sure that the code worked. 
 
