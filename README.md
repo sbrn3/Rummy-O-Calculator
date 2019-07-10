@@ -9,6 +9,7 @@ There should be no output. Just a blank line for you to type in commands.
 
 The test.py file was just used during development to make sure that the code worked. You can ignore it. 
 
+![](example.gif)
 ## Main commands
 ### game.add_to_board(colour, number)
 This is so that the program knows what tiles are currently on the board and should be used whenever one of your opponents adds a tile to the board. The order of tiles and who places them down does not matter. 
