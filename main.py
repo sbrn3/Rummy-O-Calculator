@@ -390,10 +390,3 @@ class Game:
 
 if __name__ == '__main__':
     game = Game()
-    game.add_to_board("blue", 1)
-    game.add_to_board("blue", 2)
-    game.add_to_board("blue", 3)
-    game.add_to_board("red", 4)
-    game.add_to_board("red", 5)
-    game.draw("red", 6)
-    game.best_move()
