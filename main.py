@@ -363,6 +363,7 @@ class Game:
                   "Create the following sets:".format(longest))
             for i in plays[longest][0]:
                 print(i)
+            return {longest: plays[longest][0]}
 
     @staticmethod
     def item_at_index(index_list: [], target_list: []):
