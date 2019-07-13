@@ -48,7 +48,7 @@ class Rummy(tk.Tk):
 
         self.l1 = tk.Frame(self.left_frame, height=150, width=500,
                            highlightbackground="black",
-                           highlightthickness=2 )
+                           highlightthickness=2)
         self.l1.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
 
         self.l2 = tk.Frame(self.left_frame, height=150, width=500)
@@ -97,11 +97,11 @@ class Rummy(tk.Tk):
         self.add_board_button.pack(fill=tk.X, pady=5, expand=True)
         self.draw_button = tk.Button(self.l1_right, text="Add to Hand",
                                      command=self.draw, font=("Helvetica",
-                                                                12))
+                                                              12))
         self.draw_button.pack(fill=tk.X, expand=True)
         self.play_button = tk.Button(self.l1_right, text="Play From Hand",
                                      command=self.play, font=("Helvetica",
-                                                                12))
+                                                              12))
         self.play_button.pack(fill=tk.X, pady=5, expand=True)
 
         # Add row for remove from board
@@ -163,12 +163,15 @@ class Rummy(tk.Tk):
         self.set_instructions_title = tk.Label(self.right_frame, text="Set "
                                                                       "Instructions",
                                                font=(
-                                               "Helvetica", self.title_size))
+                                                   "Helvetica",
+                                                   self.title_size))
         self.set_instructions_title.pack(fill=tk.X)
         self.set_instructions = tk.Text(self.right_frame, height=5)
         self.set_instructions.pack(fill=tk.BOTH, expand=True)
 
     def reset_game(self):
+        """Resets the game. Nothing on the board and nothing in the players
+        hand"""
         self.game = Game()
         self.refresh()
 
@@ -203,7 +206,7 @@ class Rummy(tk.Tk):
         self.refresh()
 
     def update_hand(self):
-        hand = self.game.view_hand()
+        hand = str(self.game.view_hand()).replace("[", "").replace("]", "")
         print("Hand: {0}".format(hand))
         self.players_hand.config(state=tk.NORMAL)
         self.players_hand.delete(1.0, tk.END)
@@ -212,7 +215,6 @@ class Rummy(tk.Tk):
 
     def update_board(self):
         hand = str(self.game.view_board()).replace("[", "").replace("]", "")
-        print("Hand: {0}".format(hand))
         self.board.config(state=tk.NORMAL)
         self.board.delete(1.0, tk.END)
         self.board.insert(tk.END, hand)
@@ -223,7 +225,27 @@ class Rummy(tk.Tk):
         self.update_hand()
 
     def best_move(self):
-        pass
+        self.set_instructions.config(state=tk.NORMAL)
+        self.set_instructions.delete(1.0, tk.END)
+        self.set_instructions.insert(tk.END, "Loading.....")
+        self.set_instructions.config(state=tk.DISABLED)
+        try:
+            hand, sets = self.game.best_move()
+            output = "Tiles from hand:\n{0}\n".format(hand)
+            output += "Form the following sets:\n"
+            for i in range(len(sets)):
+                output += str(sets[i])
+                if i == len(sets) - 1:
+                    continue
+                else:
+                    output += "\n"
+        except TypeError:
+            output = "There are no options. Draw a piece from the deck."
+
+        self.set_instructions.config(state=tk.NORMAL)
+        self.set_instructions.delete(1.0, tk.END)
+        self.set_instructions.insert(tk.END, output)
+        self.set_instructions.config(state=tk.DISABLED)
 
     def possible_sets(self):
         pass
@@ -232,5 +254,3 @@ class Rummy(tk.Tk):
 if __name__ == '__main__':
     root = Rummy()
     root.mainloop()
-
-

@@ -282,7 +282,7 @@ class Game:
         return output
 
     @staticmethod
-    def set_pathways2222(tiles: list) -> list:
+    def set_pathways(tiles: list) -> list:
         """Forms valid sets based on the tiles that are entered
 
         :return: potential sets
@@ -363,7 +363,7 @@ class Game:
                   "Create the following sets:".format(longest))
             for i in plays[longest][0]:
                 print(i)
-            return {longest: plays[longest][0]}
+            return longest, plays[longest][0]
 
     @staticmethod
     def item_at_index(index_list: [], target_list: []):
@@ -455,13 +455,13 @@ class Game:
                             new_test_list.remove(s)
                     else:
                         coms.remove(j)
-            
 
-def generate_random_tile():
-    """Generates and returns a random tile"""
-    colour_index = random.randrange(3)
-    number_index = random.randrange(1,13)
-    return Tile(VALID_COLOURS[colour_index], number_index)
+    @staticmethod
+    def generate_random_tile():
+        """Generates and returns a random tile"""
+        colour_index = random.randrange(3)
+        number_index = random.randrange(1,13)
+        return Tile(VALID_COLOURS[colour_index], number_index)
 
 if __name__ == '__main__':
     game = Game()
