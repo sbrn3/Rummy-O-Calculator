@@ -77,6 +77,13 @@ class TestGame(unittest.TestCase):
         """Able to add tiles to hand"""
         self.game.draw("red", 4)
         self.assertTrue(Tile("red", 4), self.game.get_player().get_hand()[0])
+    
+    def test_eq(self):
+        self.t1 = Tile("red", 3)
+        self.t2 = Tile("red", 3)
+        self.t3 = Tile("blue", 3)
+        self.assertTrue(self.t1 == self.t2)
+        self.assertFalse(self.t1 == self.t3)
 
 if __name__ == '__main__':
     unittest.main()
