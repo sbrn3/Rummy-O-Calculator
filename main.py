@@ -4,6 +4,9 @@ import unittest
 
 VALID_COLOURS = ["red", "black", "blue", "orange"]
 VALID_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+MAX_TILE_NUMBERS = 104
+JOKER = ["joker", 0]
+
 
 
 class Tile:
@@ -11,6 +14,9 @@ class Tile:
         if colour in VALID_COLOURS and number in VALID_NUMBERS:
             self._colour = str(colour)
             self._number = int(number)
+        elif colour is JOKER[0] and number is JOKER[1]:
+            self._colour = JOKER[0]
+            self._number = JOKER[1]
         else:
             print("Tiles cannot have those values. Try again with valid colours and/or numbers. \n"
                   "The correct values are \n"
@@ -164,12 +170,29 @@ class Set:
                 l += ","
         return l
 
+class Deck:
+    def __init__(self):
+        self.deck = []
+        for colour in VALID_COLOURS:
+            for number in VALID_NUMBERS:
+                self.deck.append(Tile(colour, number))
+        
+        for i in range(len(self.deck)):
+            self.deck.append(self.deck[i])
+
+        for i in range(2):
+            self.deck.append(Tile(JOKER[0], JOKER[1]))
+    
+    def drawn(self, tile : Tile):
+        return self.deck.remove(tile)
+
 
 class Game:
     def __init__(self):
         self.board = Board()
         self.player = Player()
         self._valid_sets = {}
+        self.deck = Deck()
 
     def __str__(self):
         return self.player.get_hand()
@@ -190,6 +213,8 @@ class Game:
         try:
             tile = Tile(colour, number)
             self.player.add_tile(tile)
+            self.deck.drawn(tile)
+            print("Tile " + str(tile) + " is drawn")
         except ValueError:
             pass
 
@@ -197,6 +222,7 @@ class Game:
         try:
             tile = Tile(colour, number)
             self.board.add_tile(tile)
+            self.deck
         except ValueError:
             pass
 
@@ -387,6 +413,7 @@ class Game:
                         break
         return output
 
-
 if __name__ == '__main__':
     game = Game()
+    game.draw("red", 11)
+
