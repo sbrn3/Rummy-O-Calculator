@@ -169,6 +169,9 @@ class Rummy(tk.Tk):
         self.set_instructions = tk.Text(self.right_frame, height=5)
         self.set_instructions.pack(fill=tk.BOTH, expand=True)
 
+        # Refresh all the screens for any pre-existing tiles
+        self.refresh()
+
     def reset_game(self):
         """Resets the game. Nothing on the board and nothing in the players
         hand"""
@@ -221,6 +224,7 @@ class Rummy(tk.Tk):
         self.board.config(state=tk.DISABLED)
 
     def refresh(self):
+        print("Screen refreshed")
         self.update_board()
         self.update_hand()
 
@@ -253,4 +257,11 @@ class Rummy(tk.Tk):
 
 if __name__ == '__main__':
     root = Rummy()
+
+    for i in range(30):
+        root.game.add_to_board(Game.generate_random_tile())
+
+    for i in range(10):
+        root.game.draw(Game.generate_random_tile())
+
     root.mainloop()
