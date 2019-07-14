@@ -30,6 +30,7 @@ class Rummy(tk.Tk):
         root_menu.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Reset Game", command=self.reset_game)
         file_menu.add_command(label="Refresh Screen", command=self.refresh)
+        file_menu.add_command(label="Test Mode", command=self.test_mode)
         file_menu.add_command(label="Exit", command=self.quit)
 
         help_menu = tk.Menu(root_menu)
@@ -169,6 +170,14 @@ class Rummy(tk.Tk):
         self.set_instructions = tk.Text(self.right_frame, height=5)
         self.set_instructions.pack(fill=tk.BOTH, expand=True)
 
+        # Test mode buttons
+        self.random_board_tile = tk.Button(self.l21, text="Rnd Tile Board",
+                                           command=self.add_random_tile_board,
+                                           font=("Helvetica", 12))
+        self.random_player_tile = tk.Button(self.l21, text="Rnd Tile Player",
+                                            command=self.add_random_tile_player,
+                                            font=("Helvetica", 12))
+
         # Refresh all the screens for any pre-existing tiles
         self.refresh()
 
@@ -254,14 +263,31 @@ class Rummy(tk.Tk):
     def possible_sets(self):
         pass
 
+    def test_mode(self):
+        self.random_board_tile.pack()
+        self.random_player_tile.pack()
+
+    def add_random_tile_board(self):
+        self.game.add_to_board(self.game.generate_random_tile())
+        self.refresh()
+
+    def add_random_tile_player(self):
+        self.game.draw(self.game.generate_random_tile())
+        self.refresh()
+
 
 if __name__ == '__main__':
     root = Rummy()
 
-    for i in range(30):
-        root.game.add_to_board(Game.generate_random_tile())
 
-    for i in range(10):
-        root.game.draw(Game.generate_random_tile())
+    root.game.add_to_board("black", 1)
+    root.game.add_to_board("black", 2)
+    root.game.add_to_board("black", 3)
+    root.game.add_to_board("black", 7)
+    root.game.add_to_board("red", 7)
+    root.game.add_to_board("blue", 7)
+
+    # for i in range(3):
+    #     root.game.draw(Game.generate_random_tile())
 
     root.mainloop()
