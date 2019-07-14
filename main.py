@@ -9,7 +9,6 @@ MAX_TILE_NUMBERS = 104
 JOKER = ["joker", 0]
 
 
-
 class Tile:
     def __init__(self, colour: str, number: int):
         if colour in VALID_COLOURS and number in VALID_NUMBERS:
@@ -19,11 +18,12 @@ class Tile:
             self._colour = JOKER[0]
             self._number = JOKER[1]
         else:
-            print("Tiles cannot have those values. Try again with valid colours and/or numbers. \n"
-                  "The correct values are \n"
-                  "colours: {0} \n"
-                  "numbers: {1}".format(VALID_COLOURS, VALID_NUMBERS)
-                  )  # ask to input again
+            print(
+                "Tiles cannot have those values. Try again with valid colours and/or numbers. \n"
+                "The correct values are \n"
+                "colours: {0} \n"
+                "numbers: {1}".format(VALID_COLOURS, VALID_NUMBERS)
+            )  # ask to input again
             raise ValueError()
 
     def get_colour(self):
@@ -163,20 +163,21 @@ class Set:
                 l += ","
         return l
 
+
 class Deck:
     def __init__(self):
         self.deck = []
         for colour in VALID_COLOURS:
             for number in VALID_NUMBERS:
                 self.deck.append(Tile(colour, number))
-        
+
         for i in range(len(self.deck)):
             self.deck.append(self.deck[i])
 
         for i in range(2):
             self.deck.append(Tile(JOKER[0], JOKER[1]))
-    
-    def drawn(self, tile : Tile):
+
+    def drawn(self, tile: Tile):
         return self.deck.remove(tile)
 
 
@@ -218,7 +219,6 @@ class Game:
         self.deck.drawn(tile)
         print("Tile " + str(tile) + " is drawn")
 
-
     #
     # Places a tile, which is not on the player's hand, on the board
     # This method can either takes (colour, number) to build a tile, or a Tile object#
@@ -232,7 +232,6 @@ class Game:
             tile = args[0]
         self.board.add_tile(tile)
         print("Tile " + str(tile) + " is placed on the board")
-        
 
     # duplicated method
     # def add_tile_to_board(self, tile: Tile):
@@ -249,8 +248,10 @@ class Game:
             self.add_to_board(tile)
         else:
             print("The tile {0} does not appear to be in your hand\n"
-                  "Use: game.view_hand() to view the current tiles in your hand \n "
-                  "Use: game.draw('colour', number) to add a tile to your hand".format(tile))
+                  "Use: game.view_hand() to view the current tiles in your "
+                  "hand\n "
+                  "Use: game.draw('colour', number) to add a tile to your "
+                  "hand".format(tile))
 
     @staticmethod
     def number_of_tiles_used(set_list: list):
@@ -347,8 +348,7 @@ class Game:
             if len(key) > len(longest):
                 longest = key
         if len(longest) == 0:
-            print("There are no options. Draw a piece from the deck. Using: " \
-                  "\n " \
+            print("There are no options. Draw a piece from the deck. Using:\n"
                   "game.draw('colour', number)")
         else:
             print("Using the tiles in player hand: {0} \n"
@@ -376,56 +376,56 @@ class Game:
 
     @staticmethod
     def combinations(tiles: [], minimum_length):
-            """
+        """
             Returns a list of every combination, from the minimum length
             :param minimum_length: minimum length of combinations
             :param tiles: List of all the items you want to find combinations of
             :return: List of all the combinations. Of all sizes. Starting at the
             minimum length.
             """
-            output = []
-            maximum_length = len(tiles)
-            if minimum_length > maximum_length:
-                return []
-            for choose in range(minimum_length, maximum_length + 1):  # check + 1
-                # combination function
-                index_list = []
-                for j in range(0, choose):
-                    index_list.append(j)
-                final_possible_index = maximum_length - 1
-                index_of_interest = index_list[len(index_list) - 1]
+        output = []
+        maximum_length = len(tiles)
+        if minimum_length > maximum_length:
+            return []
+        for choose in range(minimum_length, maximum_length + 1):  # check + 1
+            # combination function
+            index_list = []
+            for j in range(0, choose):
+                index_list.append(j)
+            final_possible_index = maximum_length - 1
+            index_of_interest = index_list[len(index_list) - 1]
+            while True:
+                # if index list is -1 then you have finished
+                if index_of_interest == -1:
+                    break
+                # Start by looking at the last index
+                index_of_interest = len(index_list) - 1
+                output.append(Game.item_at_index(index_list, tiles))
                 while True:
-                    # if index list is -1 then you have finished
+                    # if it is pointing to the last tile or one less than the
+                    # tile after it . look at the index before it
                     if index_of_interest == -1:
                         break
-                    # Start by looking at the last index
-                    index_of_interest = len(index_list) - 1
-                    output.append(Game.item_at_index(index_list, tiles))
-                    while True:
-                        # if it is pointing to the last tile or one less than the
-                        # tile after it . look at the index before it
-                        if index_of_interest == -1:
-                            break
-                        try:
-                            after_index = index_list[index_of_interest + 1]
-                        except IndexError:
-                            after_index = final_possible_index + 1
-                        if index_list[index_of_interest] == final_possible_index or \
-                                index_list[index_of_interest] == (after_index - 1):
-                            index_of_interest -= 1
+                    try:
+                        after_index = index_list[index_of_interest + 1]
+                    except IndexError:
+                        after_index = final_possible_index + 1
+                    if index_list[index_of_interest] == final_possible_index or \
+                            index_list[index_of_interest] == (after_index - 1):
+                        index_of_interest -= 1
 
-                            # if the one before it is out of range then you have
-                            # reached the last combination
+                        # if the one before it is out of range then you have
+                        # reached the last combination
 
-                        # else increase the index you are looking at by one
-                        else:
-                            index_list[index_of_interest] += 1
+                    # else increase the index you are looking at by one
+                    else:
+                        index_list[index_of_interest] += 1
 
-                            # make all subsequent indexes increase by one
-                            for i in range(index_of_interest, len(index_list) - 1):
-                                index_list[i + 1] = index_list[i] + 1
-                            break
-            return output
+                        # make all subsequent indexes increase by one
+                        for i in range(index_of_interest, len(index_list) - 1):
+                            index_list[i + 1] = index_list[i] + 1
+                        break
+        return output
 
     def arrange_board(self):
         success = False
@@ -455,8 +455,9 @@ class Game:
     def generate_random_tile():
         """Generates and returns a random tile"""
         colour_index = random.randrange(3)
-        number_index = random.randrange(1,13)
+        number_index = random.randrange(1, 13)
         return Tile(VALID_COLOURS[colour_index], number_index)
+
 
 if __name__ == '__main__':
     game = Game()
@@ -469,14 +470,12 @@ if __name__ == '__main__':
     #     tile = generate_random_tile()
     #     game.draw(tile)    
     # game.valid_sets_from_hand()
-    for i in range(1,4):
+    for i in range(1, 5):
         game.add_to_board(Tile("red", i))
         game.add_to_board(Tile("blue", i))
         game.add_to_board(Tile("orange", i))
-    game.add_to_board(Tile("blue",4))
+        game.add_to_board(Tile("blue", i))
 
     # print(game.arrange_board())
-    s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
+    s = Set([Tile("red", 1), Tile("blue", 1), Tile("black", 1)])
     print(s.is_valid())
-
-
