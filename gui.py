@@ -243,7 +243,6 @@ class Rummy(tk.Tk):
         self.set_instructions.delete(1.0, tk.END)
         self.set_instructions.insert(tk.END, "Loading.....")
         self.set_instructions.config(state=tk.DISABLED)
-        time.sleep(2)
 
     def best_move(self):
         self.loading()

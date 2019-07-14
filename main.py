@@ -329,6 +329,7 @@ class Game:
     def valid_sets_from_hand(self):
         valid_solutions = {}
         plays = Game.combinations(self.player.get_hand(), 1)
+
         # for every combination probability of your own tiles
         # form valid sets from those tiles
         for hand in plays:
@@ -356,6 +357,55 @@ class Game:
             for i in plays[longest][0]:
                 print(i)
             return longest, plays[longest][0]
+
+    def best_move_fast(self):
+        """Find the longest hand that you can play that will create valid
+        sets with the tiles on the board"""
+        # Find a valid set from your hand starting from longest to shortest
+
+        # Different hands that you can play from longest to shortest
+        maximum_hand_lenth = len(self.player.get_hand())
+        for i in range(maximum_hand_lenth, 0, -1):
+            hands = itertools.combinations(self.player.get_hand(), i)
+            # For each option in those list of hands see if they are able to
+            # create valid sets
+            for hand in hands:
+                play = list(hand) + self.get_board().get_tiles()
+                # Find a valid solution for that one play
+                solution = self.one_valid_solution(play)
+
+
+        # return that hand and a list of sets that can be made once you play
+        # that hand
+
+    def one_valid_solution(self, tiles: list) -> list:
+        """Returns the one valid solution for the list of tiles that is
+        entered. The aim is to do as minimal calculations as possible
+
+        TODO Can't be bothered untill I see leo's strategy """
+        original_tiles = tiles
+        itertools.combinations(original_tiles, 3)
+        # Start with one combination. Largest length
+        for i in range(len(tiles), 0, -1):
+            potential_sets = itertools.combinations(original_tiles)
+            for set in potential_sets:
+                pass
+
+
+
+
+        # If that combination an create a valid set then remove those tiles
+        # from the list
+
+        # create combinations of the remain tiles and repeat.
+
+        # If none of the combinations can make a valid set then this is not a
+        # valid solution
+
+        # If the number of tiles remaining reaches 0 then this is a valid
+        # solution. Return the pathway for this as the final answer.
+
+
 
     @staticmethod
     def item_at_index(index_list: [], target_list: []):
