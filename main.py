@@ -103,14 +103,6 @@ class Set:
     def __init__(self, tiles):
         self.tiles = []
         self.argv = tiles
-        # if len(argv) >= 3:
-        #     if self.is_valid():
-        #         for arg in self.argv:
-        #             self.tiles.append(arg)
-        #     else:
-        #         print("Init failed")
-        # else:
-        #     print("not enough\n")  # ask to re input
 
     def is_valid(self):
         if len(self.argv) < 3:
@@ -282,7 +274,7 @@ class Game:
         return output
 
     @staticmethod
-    def set_pathways2222(tiles: list) -> list:
+    def set_pathways(tiles: list) -> list:
         """Forms valid sets based on the tiles that are entered
 
         :return: potential sets
@@ -363,6 +355,7 @@ class Game:
                   "Create the following sets:".format(longest))
             for i in plays[longest][0]:
                 print(i)
+            return longest, plays[longest][0]
 
     @staticmethod
     def item_at_index(index_list: [], target_list: []):
@@ -441,13 +434,15 @@ class Game:
         arrangement = []
         test_list = self.board.get_tiles().copy()
         while set_length == max_set_length or set_length < max_set_length - 3:
-            coms = Game.combinations(test_list, set_length)
             if len(test_list) < 3:
                 return []
+            coms = Game.combinations(test_list, set_length)
             for i in coms:
                 s = Set(i)
-                if s.is_valid is False:
+                if not s.is_valid():
                     coms.remove(i)
+            print("valid sets")
+            print(coms)
             for i in coms:
                 arrangement.append(i)
                 for j in i:
@@ -455,14 +450,13 @@ class Game:
                     set_length = set_length - 1
                 if len(test_list) == 0:
                     return arrangement
-                        
 
-
-def generate_random_tile():
-    """Generates and returns a random tile"""
-    colour_index = random.randrange(3)
-    number_index = random.randrange(1,13)
-    return Tile(VALID_COLOURS[colour_index], number_index)
+    @staticmethod
+    def generate_random_tile():
+        """Generates and returns a random tile"""
+        colour_index = random.randrange(3)
+        number_index = random.randrange(1,13)
+        return Tile(VALID_COLOURS[colour_index], number_index)
 
 if __name__ == '__main__':
     game = Game()
@@ -481,5 +475,8 @@ if __name__ == '__main__':
         game.add_to_board(Tile("orange", i))
     game.add_to_board(Tile("blue",4))
 
-    print(game.arrange_board())
+    # print(game.arrange_board())
+    s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
+    print(s.is_valid())
+
 
