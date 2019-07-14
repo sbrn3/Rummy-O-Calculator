@@ -435,26 +435,28 @@ class Game:
             return output
 
     def arrange_board(self):
-        max_set_length = len(self.board.get_tiles())
         success = False
+        max_set_length = len(self.board.get_tiles())
+        set_length = 3
         arrangement = []
-        test_list = []
-        while max_set_length > 0:
-            for i in self.board.get_tiles():
-                test_list.append(i)
-                test_list.extend(self.board.get_tiles()[i+1:])
-                coms = combinations(test_list, max_set_length)
+        test_list = self.board.get_tiles().copy()
+        while set_length == max_set_length or set_length < max_set_length - 3:
+            coms = Game.combinations(test_list, set_length)
+            if len(test_list) < 3:
+                return []
+            for i in coms:
+                s = Set(i)
+                if s.is_valid is False:
+                    coms.remove(i)
+            for i in coms:
+                arrangement.append(i)
+                for j in i:
+                    test_list.remove(j)
+                    set_length = set_length - 1
+                if len(test_list) == 0:
+                    return arrangement
+                        
 
-                for j in coms:
-                    s = Set(j)
-                    if s.is_valid():
-                        arrangement.append(s)
-                        new_test_list = test_list.copy()
-                        for k in s:
-                            new_test_list.remove(s)
-                    else:
-                        coms.remove(j)
-            
 
 def generate_random_tile():
     """Generates and returns a random tile"""
@@ -474,8 +476,10 @@ if __name__ == '__main__':
     #     game.draw(tile)    
     # game.valid_sets_from_hand()
     for i in range(1,4):
-        tile_list.append(Tile("red", i))
-        tile_list.append(Tile("blue", i))
-        tile_list.append(Tile("orange", i))
-    res = game.combinations(tile_list, 3)
+        game.add_to_board(Tile("red", i))
+        game.add_to_board(Tile("blue", i))
+        game.add_to_board(Tile("orange", i))
+    game.add_to_board(Tile("blue",4))
+
+    print(game.arrange_board())
 
