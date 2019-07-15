@@ -166,6 +166,7 @@ class Set:
 
 class Deck:
     def __init__(self):
+        self.available_moves = []
         self.deck = []
         for colour in VALID_COLOURS:
             for number in VALID_NUMBERS:
@@ -198,6 +199,9 @@ class Game:
         print(self.player.get_hand())
         return self.player.get_hand()
 
+    def get_number_of_tiles_on_board(self):
+        return len(self.board.get_tiles())
+
     def view_board(self):
         print(self.board.get_tiles())
         return self.board.get_tiles()
@@ -208,6 +212,8 @@ class Game:
     #
     # Draws (Removes) a tile from the deck which is then placed in the player's hand#
     def draw(self, *args):
+        """ args can either be (colour, number) or object Tile
+        """
         if len(args) == 2:
             try:
                 tile = Tile(args[0], args[1])
@@ -218,6 +224,11 @@ class Game:
         self.player.add_tile(tile)
         self.deck.drawn(tile)
         print("Tile " + str(tile) + " is drawn")
+    
+    def remove_from_board(self, tile : Tile):
+        #removes a tile from the board
+        #to be used with possible_moves only
+        self.get_board().get_tiles().remove(tile)
 
     #
     # Places a tile, which is not on the player's hand, on the board
@@ -508,22 +519,60 @@ class Game:
         return coms
 
     def possible_set_combinations_on_board(self):
-        res = []
+        dup_list = self.list_duplicate_tiles()
         combs = self.possible_tile_combinations_on_board()
         #groups possible combinations on the board, if they use up all the tiles available, there's a possible move
         mix = Game.combinations(combs, 2)
         mix_cp = mix.copy()
-        #discard combinations of sets that involve the same tile twice
+        #discards combinations of sets that involve the same tile with no duplicate on the board twice
         for i in mix_cp:
             flag = False
             for j in range(len(i) - 1):
-                if len(set(i[j]).intersection(set(i[j+1]))) > 0:
-                    flag = True
+                dup = set(i[j]).intersection(set(i[j+1]))
+                if len(dup) > 0:
+                    for k in dup:
+                        if k not in dup_list:
+                            flag = True
+                            break
             if flag:
                 mix.remove(i)
                 continue
+        #copies the updated list
+        mix_cp = mix.copy()
+        #discards combinations of sets that don't use up all the tiles present on the board
+        for i in mix_cp:
+            mix_len = 0
+            for j in i:
+                mix_len += len(j)
+            if mix_len != self.get_number_of_tiles_on_board():
+                mix.remove(i)
+        return mix
 
-        return res
+    def possible_moves(self):
+        """bool whether there is any available moves can be made from player's hand
+            possible moves are then stored in self.possible_moves"""
+        res = []
+        hand = self.get_player().get_hand()
+        if len(hand) == 0:
+            print("Player's hand is empty")
+            raise ValueError()
+        for i in hand:
+            self.add_to_board(i)
+            sol = self.possible_set_combinations_on_board()
+            if len(sol) != 0:
+                res.extend(sol)
+            else:
+                self.remove_from_board(i)
+        if len(res) != 0:
+            self.possible_moves = res
+        else:
+            return False
+        return True
+
+    def get_possible_moves(self):
+        if self.possible_moves():
+            return self.possible_moves
+
 
     @staticmethod
     def generate_random_tile():
@@ -536,22 +585,14 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     tile_list = []
-    # for i in range(15):
-    #     tile = generate_random_tile()
-    #     tile_list.append(tile)
-    #     game.add_to_board(tile)
-    # for i in range(7):
-    #     tile = generate_random_tile()
-    #     game.draw(tile)    
-    # game.valid_sets_from_hand()
     for i in range(1, 4):
         game.add_to_board(Tile("red", i))
         game.add_to_board(Tile("blue", i))
-        # game.add_to_board(Tile("orange", i))
+        game.add_to_board(Tile("orange", i))
     game.add_to_board(Tile("blue",4))
-    game.add_to_board(Tile("blue",4))
-
-    print(game.list_duplicate_tiles())
+    # game.add_to_board(Tile("blue",4))
+    game.draw("blue", 5)
+    print(game.get_possible_moves())
 
     # s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
     # print(s.is_valid())
