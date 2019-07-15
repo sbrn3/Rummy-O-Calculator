@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from main import VALID_NUMBERS, VALID_COLOURS, Game
 import webbrowser
@@ -237,11 +238,14 @@ class Rummy(tk.Tk):
         self.update_board()
         self.update_hand()
 
-    def best_move(self):
+    def loading(self):
         self.set_instructions.config(state=tk.NORMAL)
         self.set_instructions.delete(1.0, tk.END)
         self.set_instructions.insert(tk.END, "Loading.....")
         self.set_instructions.config(state=tk.DISABLED)
+
+    def best_move(self):
+        self.loading()
         try:
             hand, sets = self.game.best_move()
             output = "Tiles from hand:\n{0}\n".format(hand)
@@ -267,6 +271,16 @@ class Rummy(tk.Tk):
         self.random_board_tile.pack()
         self.random_player_tile.pack()
 
+        # Add test tiles to board
+        self.game.add_to_board("black", 1)
+        self.game.add_to_board("black", 2)
+        self.game.add_to_board("black", 3)
+        self.game.add_to_board("black", 7)
+        self.game.add_to_board("red", 7)
+        self.game.add_to_board("blue", 7)
+
+        self.refresh()
+
     def add_random_tile_board(self):
         self.game.add_to_board(self.game.generate_random_tile())
         self.refresh()
@@ -278,14 +292,6 @@ class Rummy(tk.Tk):
 
 if __name__ == '__main__':
     root = Rummy()
-
-
-    root.game.add_to_board("black", 1)
-    root.game.add_to_board("black", 2)
-    root.game.add_to_board("black", 3)
-    root.game.add_to_board("black", 7)
-    root.game.add_to_board("red", 7)
-    root.game.add_to_board("blue", 7)
 
     # for i in range(3):
     #     root.game.draw(Game.generate_random_tile())
