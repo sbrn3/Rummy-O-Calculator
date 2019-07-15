@@ -433,24 +433,23 @@ class Game:
         set_length = 3
         arrangement = []
         test_list = self.board.get_tiles().copy()
-        while set_length == max_set_length or set_length < max_set_length - 3:
-            if len(test_list) < 3:
-                return []
-            coms = Game.combinations(test_list, set_length)
-            for i in coms:
-                s = Set(i)
-                if not s.is_valid():
-                    coms.remove(i)
-            print("valid sets")
-            print(coms)
-            for i in coms:
-                arrangement.append(i)
-                for j in i:
-                    test_list.remove(j)
-                    set_length = set_length - 1
-                if len(test_list) == 0:
-                    return arrangement
-
+        # while set_length == max_set_length or set_length < max_set_length - 3:
+        if len(test_list) < 3:
+            return []
+        coms = Game.combinations(test_list, set_length)
+        coms_cp = coms.copy()
+        print(len(coms))
+        for i in coms:
+            # print(i)
+            if not Set(i).is_valid():
+                # print(i)
+                coms_cp.remove(i)
+        coms = coms_cp
+            # for i in coms:
+            #     arrangement.append(i)
+            #     set_length = set_length - 1
+            #     if len(test_list) == 0:
+            #         return arrangement
     @staticmethod
     def generate_random_tile():
         """Generates and returns a random tile"""
@@ -472,11 +471,11 @@ if __name__ == '__main__':
     for i in range(1,4):
         game.add_to_board(Tile("red", i))
         game.add_to_board(Tile("blue", i))
-        game.add_to_board(Tile("orange", i))
+        # game.add_to_board(Tile("orange", i))
     game.add_to_board(Tile("blue",4))
 
-    # print(game.arrange_board())
-    s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
-    print(s.is_valid())
+    print(game.arrange_board())
+    # s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
+    # print(s.is_valid())
 
 
