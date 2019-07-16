@@ -11,6 +11,7 @@ JOKER = ["joker", 0]
 
 class Tile:
     def __init__(self, colour: str, number: int):
+        self.id = 0
         if colour in VALID_COLOURS and number in VALID_NUMBERS:
             self._colour = str(colour)
             self._number = int(number)
@@ -26,6 +27,12 @@ class Tile:
             )  # ask to input again
             raise ValueError()
 
+    def set_id(self, id):
+        self.id = id
+    
+    def get_id(self):
+        return self.id
+
     def get_colour(self):
         return self._colour
 
@@ -36,24 +43,26 @@ class Tile:
         return self._colour, self._number
 
     def __str__(self):
-        return "({0}, {1})".format(self._colour, self._number)
+        return "({0}, {1}, {2})".format(self._colour, self._number, self.get_id())
 
     def __repr__(self):
         return "({0}, {1})".format(self._colour, self._number)
 
+    # def __eq__(self, other) -> bool:
+        # """
+        # Compare if two tiles have the same values
+        # :param other: Other tile you are comparing to
+        # :return: If values on tiles are equal
+        # """
+        # other_colour = str(other.get_colour())
+        # self_colour = str(self.get_colour())
+        # if other_colour == self_colour and int(other.get_number()) \
+        #         == int(self.get_number()):
+        #     return True
+        # else:
+        #     return False
     def __eq__(self, other) -> bool:
-        """
-        Compare if two tiles have the same values
-        :param other: Other tile you are comparing to
-        :return: If values on tiles are equal
-        """
-        other_colour = str(other.get_colour())
-        self_colour = str(self.get_colour())
-        if other_colour == self_colour and int(other.get_number()) \
-                == int(self.get_number()):
-            return True
-        else:
-            return False
+        return self.get_id() == other.get_id()
 
     def __hash__(self):
         return hash((self.get_colour(), self.get_number()))
@@ -97,6 +106,9 @@ class Player:
 
     def get_tile(self, i):
         return self.tiles[i]
+    
+    def tiles_id(self):
+        return [i.get_id() for i in self.tiles]
 
 
 class Set:
@@ -149,7 +161,7 @@ class Set:
             number = i
         return True
 
-    def add_tile(self, tile: Tile):
+    def add_tile(self, tile):
         self.tiles.append(tile)
 
     def my_sets(self):
@@ -188,6 +200,7 @@ class Game:
         self.player = Player()
         self._valid_sets = {}
         self.deck = Deck()
+        self.total_tiles = 0
 
     def __str__(self):
         return self.player.get_hand()
@@ -209,6 +222,11 @@ class Game:
     def get_board(self):
         return self.board
 
+    def set_tile_id(self, tile : Tile):
+        self.total_tiles += 1
+        tile.set_id(self.total_tiles)
+
+
     #
     # Draws (Removes) a tile from the deck which is then placed in the player's hand#
     def draw(self, *args):
@@ -221,19 +239,25 @@ class Game:
                 pass
         else:
             tile = args[0]
+
+        self.set_tile_id(tile)
         self.player.add_tile(tile)
-        self.deck.drawn(tile)
+        # self.deck.drawn(tile)
         print("Tile " + str(tile) + " is drawn")
+
+    def add_to_board_from_hand(self, tile):
+        self.board.add_tile(tile)
     
     def remove_from_board(self, tile : Tile):
         #removes a tile from the board
         #to be used with possible_moves only
         self.get_board().get_tiles().remove(tile)
 
-    #
-    # Places a tile, which is not on the player's hand, on the board
-    # This method can either takes (colour, number) to build a tile, or a Tile object#
+
     def add_to_board(self, *args):
+        """Places a tile, which is not on the player's hand, on the board
+        This method can either takes (colour, number) to build a tile, or a Tile object"""
+
         if len(args) == 2:
             try:
                 tile = Tile(args[0], args[1])
@@ -241,8 +265,9 @@ class Game:
                 pass
         else:
             tile = args[0]
+        self.set_tile_id(tile)
         self.board.add_tile(tile)
-        print("Tile " + str(tile) + " is placed on the board")
+        # print("Tile " + str(tile) + " is placed on the board")
 
     # duplicated method
     # def add_tile_to_board(self, tile: Tile):
@@ -509,16 +534,18 @@ class Game:
         # max_set_length = len(self.board.get_tiles())
         set_length = 3
         test_list = self.board.get_tiles().copy()
+        test_list.extend(self.get_player().get_hand())
         if len(test_list) < 3:
             return []
         coms = Game.combinations(test_list, set_length)
         coms_cp = coms.copy()
+        #discards invalid sets
         for i in coms_cp:
             if not Set(i).is_valid():
                 coms.remove(i)
         return coms
 
-    def possible_set_combinations_on_board(self):
+    def possible_set_combinations(self):
         dup_list = self.list_duplicate_tiles()
         combs = self.possible_tile_combinations_on_board()
         #groups possible combinations on the board, if they use up all the tiles available, there's a possible move
@@ -546,7 +573,25 @@ class Game:
                 mix_len += len(j)
             if mix_len != self.get_number_of_tiles_on_board():
                 mix.remove(i)
-        return mix
+        print(self.get_player().tiles_id())
+        # cnt = 0
+        # for i in mix:
+        #     for j in i:
+        #         if j.get_id() in self.get_player().tiles_id():
+        #             return mix
+        # print(mix)
+        return None
+
+    def possible_hand_and_board_combinations(self, hand):
+        res = []
+        for i in hand:
+            self.add_to_board(i)
+            sol = self.possible_set_combinations()
+            if len(sol) != 0:
+                res.extend(sol)
+            else:
+                self.remove_from_board(i)
+        return res
 
     def possible_moves(self):
         """bool whether there is any available moves can be made from player's hand
@@ -556,18 +601,8 @@ class Game:
         if len(hand) == 0:
             print("Player's hand is empty")
             raise ValueError()
-        for i in hand:
-            self.add_to_board(i)
-            sol = self.possible_set_combinations_on_board()
-            if len(sol) != 0:
-                res.extend(sol)
-            else:
-                self.remove_from_board(i)
-        if len(res) != 0:
-            self.possible_moves = res
-        else:
-            return False
-        return True
+        hand = Game.combinations(hand, 0)
+
 
     def get_possible_moves(self):
         if self.possible_moves():
@@ -589,12 +624,11 @@ if __name__ == '__main__':
         game.add_to_board(Tile("red", i))
         game.add_to_board(Tile("blue", i))
         game.add_to_board(Tile("orange", i))
-    game.add_to_board(Tile("blue",4))
-    # game.add_to_board(Tile("blue",4))
-    game.draw("blue", 5)
-    print(game.get_possible_moves())
+        game.draw(Tile("red", i))
+    game.add_to_board(Tile("blue", 4))
+        
 
-    # s = Set([Tile("red", 1), Tile("blue", 1), Tile("blue", 2)])
-    # print(s.is_valid())
+    for i in game.possible_tile_combinations_on_board():
+        print(i)
 
 
